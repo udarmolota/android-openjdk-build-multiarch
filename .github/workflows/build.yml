@@ -53,12 +53,6 @@ jobs:
           name: "jre${{ matrix.version }}-debuginfo-${{matrix.arch}}"
           path: dizout
 
-  build_iosport:
-    strategy:
-      matrix:
-        version: [25]
-      fail-fast: false
-
     name: "Build Java ${{ matrix.version }} for iOS aarch64"
     runs-on: MacStadium
     continue-on-error: true
