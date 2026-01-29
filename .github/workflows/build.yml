@@ -32,6 +32,14 @@ jobs:
           sudo apt update
           sudo apt -y install autoconf python3 python-is-python3 unzip zip systemtap-sdt-dev libxtst-dev libasound2-dev libelf-dev libfontconfig1-dev libx11-dev libxext-dev libxrandr-dev libxrender-dev libxtst-dev libxt-dev
 
+      - name: Install clang 18
+        run: |
+          sudo apt update
+          sudo apt -y install clang-18 lld-18
+          echo "CC=clang-18" >> $GITHUB_ENV
+          echo "CXX=clang++-18" >> $GITHUB_ENV
+          echo "LD=lld-18" >> $GITHUB_ENV
+          
       - name: Build with CI build script
         run: export TARGET_VERSION=${{ matrix.version }} && bash "1_ci_build_arch_${{matrix.arch}}.sh"
 
@@ -52,40 +60,7 @@ jobs:
         with:
           name: "jre${{ matrix.version }}-debuginfo-${{matrix.arch}}"
           path: dizout
-
-    name: "Build Java ${{ matrix.version }} for iOS aarch64"
-    runs-on: MacStadium
-    continue-on-error: true
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Build with CI build script
-        run: |
-          export PATH=/opt/procursus/bin:/opt/homebrew/bin:$PATH
-          export JAVA_HOME=$(/usr/libexec/java_home -v ${{ matrix.version }})
-          export BUILD_IOS=1
-          export TARGET_VERSION=${{ matrix.version }}
-          bash "1_ci_build_arch_aarch64.sh"
-
-      #    - name: Upload JDK build output
-      #      uses: actions/upload-artifact@v4
-      #      with:
-      #        name: "jdk17-ios-aarch64"
-      #        path: jdk17*.tar.xz
-
-      - name: Upload JRE build output
-        uses: actions/upload-artifact@v4
-        with:
-          name: "jre${{ matrix.version }}-ios-aarch64"
-          path: jre${{ matrix.version }}*.tar.xz
-
-      - name: Upload JRE debuginfo build output
-        uses: actions/upload-artifact@v4
-        with:
-          name: "jre${{ matrix.version }}-ios-debuginfo-aarch64"
-          path: dizout
-
+          
   pojav:
     needs: build_android
     runs-on: ubuntu-22.04
@@ -96,29 +71,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Get jre${{ matrix.version }}-aarch32
-        uses: actions/download-artifact@v4
-        with:
-          name: jre${{ matrix.version }}-aarch32
-          path: pojav
-
+     
       - name: Get jre${{ matrix.version }}-aarch64
         uses: actions/download-artifact@v4
         with:
           name: jre${{ matrix.version }}-aarch64
-          path: pojav
-
-      - name: Get jre${{ matrix.version }}-x86
-        uses: actions/download-artifact@v4
-        with:
-          name: jre${{ matrix.version }}-x86
-          path: pojav
-
-      - name: Get jre${{ matrix.version }}-x86_64
-        uses: actions/download-artifact@v4
-        with:
-          name: jre${{ matrix.version }}-x86_64
           path: pojav
 
       - name: Repack JRE
