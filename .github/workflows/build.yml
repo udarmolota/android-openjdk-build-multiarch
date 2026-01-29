@@ -16,7 +16,7 @@ jobs:
       fail-fast: false
 
     name: "Build Java ${{ matrix.version }} for Android ${{matrix.arch}}"
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -51,11 +51,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: "jre${{ matrix.version }}-debuginfo-${{matrix.arch}}"
-          path: dizout
+          path: udarmolota
           
   pojav:
     needs: build_android
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         version: [25]
@@ -68,13 +68,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: jre${{ matrix.version }}-aarch64
-          path: pojav
+          path: udarmolota
 
       - name: Repack JRE
-        run: export TARGET_VERSION=${{ matrix.version }} && bash "9_repackjre.sh" $GITHUB_WORKSPACE/pojav $GITHUB_WORKSPACE/pojav/jre${{ matrix.version }}-pojav
+        run: export TARGET_VERSION=${{ matrix.version }} && bash "9_repackjre.sh" $GITHUB_WORKSPACE/udarmolota $GITHUB_WORKSPACE/udarmolota/jre${{ matrix.version }}-udarmolota
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: jre${{ matrix.version }}-pojav
-          path: pojav/jre${{ matrix.version }}-pojav/*
+          name: jre${{ matrix.version }}-udarmolota
+          path: udarmolota/jre${{ matrix.version }}-udarmolota/*
