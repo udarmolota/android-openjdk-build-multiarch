@@ -1,4 +1,4 @@
-name: Build OpenJDK 17 for Android and iOS
+name: Build OpenJDK 25 for Android
 
 on:
   push:
@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         arch: ["aarch32", "aarch64", "x86", "x86_64"]
-        version: [17, 21]
+        version: [17, 21, 25]
       fail-fast: false
 
     name: "Build Java ${{ matrix.version }} for Android ${{matrix.arch}}"
