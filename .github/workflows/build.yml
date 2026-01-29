@@ -16,7 +16,7 @@ jobs:
       fail-fast: false
 
     name: "Build Java ${{ matrix.version }} for Android ${{matrix.arch}}"
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -32,20 +32,13 @@ jobs:
           sudo apt update
           sudo apt -y install autoconf python3 python-is-python3 unzip zip systemtap-sdt-dev libxtst-dev libasound2-dev libelf-dev libfontconfig1-dev libx11-dev libxext-dev libxrandr-dev libxrender-dev libxtst-dev libxt-dev
 
-      - name: Install clang 18 (apt.llvm.org)
+      - name: Install clang 18
         run: |
-          set -eux
-          sudo apt-get update
-          sudo apt-get install -y wget ca-certificates gnupg
-          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo gpg --dearmor -o /usr/share/keyrings/llvm.gpg
-          echo "deb [signed-by=/usr/share/keyrings/llvm.gpg] https://apt.llvm.org/jammy/ llvm-toolchain-jammy-18 main" | sudo tee /etc/apt/sources.list.d/llvm18.list
-          sudo apt-get update
-          sudo apt-get install -y clang-18 lld-18
+          sudo apt update
+          sudo apt -y install clang-18 lld-18
           echo "CC=clang-18" >> $GITHUB_ENV
           echo "CXX=clang++-18" >> $GITHUB_ENV
           echo "LD=ld.lld-18" >> $GITHUB_ENV
-          clang-18 --version
-          ld.lld-18 --version
 
           
       - name: Build with CI build script
@@ -71,7 +64,7 @@ jobs:
           
   pojav:
     needs: build_android
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         version: [25]
