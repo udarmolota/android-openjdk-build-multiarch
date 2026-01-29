@@ -32,17 +32,21 @@ jobs:
           sudo apt update
           sudo apt -y install autoconf python3 python-is-python3 unzip zip systemtap-sdt-dev libxtst-dev libasound2-dev libelf-dev libfontconfig1-dev libx11-dev libxext-dev libxrandr-dev libxrender-dev libxtst-dev libxt-dev
 
-      - name: Install clang 18 (LLVM apt repo)
+      - name: Install clang 18 (apt.llvm.org)
         run: |
-          sudo apt update
-          sudo apt -y install wget gnupg lsb-release software-properties-common
-          wget -qO- https://apt.llvm.org/llvm.sh | sudo bash -s -- 18
+          set -eux
+          sudo apt-get update
+          sudo apt-get install -y wget ca-certificates gnupg
+          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo gpg --dearmor -o /usr/share/keyrings/llvm.gpg
+          echo "deb [signed-by=/usr/share/keyrings/llvm.gpg] https://apt.llvm.org/jammy/ llvm-toolchain-jammy-18 main" | sudo tee /etc/apt/sources.list.d/llvm18.list
+          sudo apt-get update
+          sudo apt-get install -y clang-18 lld-18
           echo "CC=clang-18" >> $GITHUB_ENV
           echo "CXX=clang++-18" >> $GITHUB_ENV
-          echo "LD=lld-18" >> $GITHUB_ENV
+          echo "LD=ld.lld-18" >> $GITHUB_ENV
           clang-18 --version
-          clang++-18 --version
-          lld-18 --version
+          ld.lld-18 --version
+
           
       - name: Build with CI build script
         run: export TARGET_VERSION=${{ matrix.version }} && bash "1_ci_build_arch_${{matrix.arch}}.sh"
